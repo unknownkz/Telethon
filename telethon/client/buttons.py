@@ -36,7 +36,7 @@ class ButtonMethods:
 
                 markup = client.build_reply_markup(Button.inline('hi'))
                 # later
-                await client.send_message(chat, 'click me', buttons=markup)
+                await client.sendmessage(chat, 'click me', buttons=markup)
         """
         if buttons is None:
             return None

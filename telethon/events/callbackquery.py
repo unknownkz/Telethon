@@ -50,7 +50,7 @@ class CallbackQuery(EventBuilder):
 
             # Send a message with buttons users can click
             async def main():
-                await client.send_message(user, 'Yes or no?', buttons=[
+                await client.sendmessage(user, 'Yes or no?', buttons=[
                     Button.inline('Yes!', b'yes'),
                     Button.inline('Nope', b'no')
                 ])
@@ -277,7 +277,7 @@ class CallbackQuery(EventBuilder):
             This method will likely fail if `via_inline` is `True`.
             """
             self._client.loop.create_task(self.answer())
-            return await self._client.send_message(
+            return await self._client.sendmessage(
                 await self.get_input_chat(), *args, **kwargs)
 
         async def reply(self, *args, **kwargs):
@@ -292,7 +292,7 @@ class CallbackQuery(EventBuilder):
             """
             self._client.loop.create_task(self.answer())
             kwargs['reply_to'] = self.query.msg_id
-            return await self._client.send_message(
+            return await self._client.sendmessage(
                 await self.get_input_chat(), *args, **kwargs)
 
         async def edit(self, *args, **kwargs):
@@ -313,11 +313,11 @@ class CallbackQuery(EventBuilder):
             """
             self._client.loop.create_task(self.answer())
             if isinstance(self.query.msg_id, types.InputBotInlineMessageID):
-                return await self._client.edit_message(
+                return await self._client.editmessage(
                     self.query.msg_id, *args, **kwargs
                 )
             else:
-                return await self._client.edit_message(
+                return await self._client.editmessage(
                     await self.get_input_chat(), self.query.msg_id,
                     *args, **kwargs
                 )

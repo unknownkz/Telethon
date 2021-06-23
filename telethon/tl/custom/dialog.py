@@ -96,12 +96,12 @@ class Dialog:
         )
         self.is_channel = isinstance(self.entity, types.Channel)
 
-    async def send_message(self, *args, **kwargs):
+    async def sendmessage(self, *args, **kwargs):
         """
         Sends a message to this dialog. This is just a wrapper around
-        ``client.send_message(dialog.input_entity, *args, **kwargs)``.
+        ``client.sendmessage(dialog.input_entity, *args, **kwargs)``.
         """
-        return await self._client.send_message(
+        return await self._client.sendmessage(
             self.input_entity, *args, **kwargs)
 
     async def delete(self, revoke=False):

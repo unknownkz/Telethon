@@ -79,13 +79,13 @@ class Conversation(ChatGetter):
         self._edit_dates = {}
 
     @_checks_cancelled
-    async def send_message(self, *args, **kwargs):
+    async def sendmessage(self, *args, **kwargs):
         """
         Sends a message in the context of this conversation. Shorthand
         for `telethon.client.messages.MessageMethods.send_message` with
         ``entity`` already set.
         """
-        sent = await self._client.send_message(
+        sent = await self._client.sendmessage(
             self._input_chat, *args, **kwargs)
 
         # Albums will be lists, so handle that
@@ -95,13 +95,13 @@ class Conversation(ChatGetter):
         return sent
 
     @_checks_cancelled
-    async def send_file(self, *args, **kwargs):
+    async def sendfile(self, *args, **kwargs):
         """
         Sends a file in the context of this conversation. Shorthand
         for `telethon.client.uploads.UploadMethods.send_file` with
         ``entity`` already set.
         """
-        sent = await self._client.send_file(
+        sent = await self._client.sendfile(
             self._input_chat, *args, **kwargs)
 
         # Albums will be lists, so handle that
@@ -147,12 +147,12 @@ class Conversation(ChatGetter):
         .. code-block:: python
 
             async with client.conversation(...) as conv:
-                await conv.send_message('Hey, what is your name?')
+                await conv.sendmessage('Hey, what is your name?')
 
                 response = await conv.get_response()
                 name = response.text
 
-                await conv.send_message('Nice to meet you, {}!'.format(name))
+                await conv.sendmessage('Nice to meet you, {}!'.format(name))
         """
         return self._get_message(
             message, self._response_indices, self._pending_responses, timeout,
@@ -311,13 +311,13 @@ class Conversation(ChatGetter):
                     ))
 
                     # Perform whatever action in between
-                    await conv.send_message('Please join this group before speaking to me!')
+                    await conv.sendmessage('Please join this group before speaking to me!')
 
                     # Wait for the event we registered above to fire
                     event = await handle
 
                     # Continue with the conversation
-                    await conv.send_message('Thanks!')
+                    await conv.sendmessage('Thanks!')
 
         This way your event can be registered before acting,
         since the response may arrive before your event was

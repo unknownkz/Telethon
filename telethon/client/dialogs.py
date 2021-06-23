@@ -243,7 +243,7 @@ class DialogMethods:
                 print(first.title)
 
                 # Use the dialog somewhere else
-                await client.send_message(first, 'hi')
+                await client.sendmessage(first, 'hi')
 
                 # Getting only non-archived dialogs (both equivalent)
                 non_archived = await client.get_dialogs(folder=0)
@@ -540,7 +540,7 @@ class DialogMethods:
                 .. code-block:: python
 
                     async with client.conversation(chat) as conv:
-                        msg1 = await conv.send_message('Hello!')
+                        msg1 = await conv.sendmessage('Hello!')
                         msg2 = await conv.get_response()
                         msg3 = await conv.get_reply()
 
@@ -561,26 +561,26 @@ class DialogMethods:
                 # <usr> denotes incoming response messages
                 with bot.conversation(chat) as conv:
                     # <you> Hi!
-                    conv.send_message('Hi!')
+                    conv.sendmessage('Hi!')
 
                     # <usr> Hello!
                     hello = conv.get_response()
 
                     # <you> Please tell me your name
-                    conv.send_message('Please tell me your name')
+                    conv.sendmessage('Please tell me your name')
 
                     # <usr> ?
                     name = conv.get_response().raw_text
 
                     while not any(x.isalpha() for x in name):
                         # <you> Your name didn't have any letters! Try again
-                        conv.send_message("Your name didn't have any letters! Try again")
+                        conv.sendmessage("Your name didn't have any letters! Try again")
 
                         # <usr> Human
                         name = conv.get_response().raw_text
 
                     # <you> Thanks Human!
-                    conv.send_message('Thanks {}!'.format(name))
+                    conv.sendmessage('Thanks {}!'.format(name))
         """
         return custom.Conversation(
             self,

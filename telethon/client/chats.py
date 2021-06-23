@@ -786,14 +786,14 @@ class ChatMethods:
                 # Type for 2 seconds, then send a message
                 async with client.action(chat, 'typing'):
                     await asyncio.sleep(2)
-                    await client.send_message(chat, 'Hello world! I type slow ^^')
+                    await client.sendmessage(chat, 'Hello world! I type slow ^^')
 
                 # Cancel any previous action
                 await client.action(chat, 'cancel')
 
                 # Upload a document, showing its progress (most clients ignore this)
                 async with client.action(chat, 'document') as action:
-                    await client.send_file(chat, zip_file, progress_callback=action.progress)
+                    await client.sendfile(chat, zip_file, progress_callback=action.progress)
         """
         if isinstance(action, str):
             try:

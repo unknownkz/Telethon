@@ -743,7 +743,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
         with ``entity`` already set.
         """
         if self._client:
-            return await self._client.send_message(
+            return await self._client.sendmessage(
                 await self.get_input_chat(), *args, **kwargs)
 
     async def reply(self, *args, **kwargs):
@@ -754,7 +754,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
         """
         if self._client:
             kwargs['reply_to'] = self.id
-            return await self._client.send_message(
+            return await self._client.sendmessage(
                 await self.get_input_chat(), *args, **kwargs)
 
     async def forward_to(self, *args, **kwargs):
@@ -802,7 +802,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
         if 'buttons' not in kwargs:
             kwargs['buttons'] = self.reply_markup
 
-        return await self._client.edit_message(
+        return await self._client.editmessage(
             await self.get_input_chat(), self.id,
             *args, **kwargs
         )

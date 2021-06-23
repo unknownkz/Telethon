@@ -92,7 +92,7 @@ class MessageButton:
         :tl:`InputGeoPoint` if you find the order confusing.
         """
         if isinstance(self.button, types.KeyboardButton):
-            return await self._client.send_message(
+            return await self._client.sendmessage(
                 self._chat, self.button.text, parse_mode=None)
         elif isinstance(self.button, types.KeyboardButtonCallback):
             if password is not None:
@@ -134,7 +134,7 @@ class MessageButton:
                     vcard=''
                 )
 
-            return await self._client.send_file(self._chat, share_phone)
+            return await self._client.sendfile(self._chat, share_phone)
         elif isinstance(self.button, types.KeyboardButtonRequestGeoLocation):
             if not share_geo:
                 raise ValueError('cannot click on geo buttons unless share_geo=(longitude, latitude)')
@@ -143,4 +143,4 @@ class MessageButton:
                 long, lat = share_geo
                 share_geo = types.InputMediaGeoPoint(types.InputGeoPoint(lat=lat, long=long))
 
-            return await self._client.send_file(self._chat, share_geo)
+            return await self._client.sendfile(self._chat, share_geo)

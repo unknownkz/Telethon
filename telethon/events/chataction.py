@@ -206,7 +206,7 @@ class ChatAction(EventBuilder):
             `telethon.client.messages.MessageMethods.send_message` with
             ``entity`` already set.
             """
-            return await self._client.send_message(
+            return await self._client.sendmessage(
                 await self.get_input_chat(), *args, **kwargs)
 
         async def reply(self, *args, **kwargs):
@@ -221,7 +221,7 @@ class ChatAction(EventBuilder):
                 return await self.respond(*args, **kwargs)
 
             kwargs['reply_to'] = self.action_message.id
-            return await self._client.send_message(
+            return await self._client.sendmessage(
                 await self.get_input_chat(), *args, **kwargs)
 
         async def delete(self, *args, **kwargs):

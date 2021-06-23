@@ -1356,14 +1356,14 @@ def encode_waveform(waveform):
             file = 'my.ogg'
 
             # Send 'my.ogg' with a ascending-triangle waveform
-            await client.send_file(chat, file, attributes=[types.DocumentAttributeAudio(
+            await client.sendfile(chat, file, attributes=[types.DocumentAttributeAudio(
                 duration=7,
                 voice=True,
                 waveform=utils.encode_waveform(bytes(range(2 ** 5))  # 2**5 because 5-bit
             )]
 
             # Send 'my.ogg' with a square waveform
-            await client.send_file(chat, file, attributes=[types.DocumentAttributeAudio(
+            await client.sendfile(chat, file, attributes=[types.DocumentAttributeAudio(
                 duration=7,
                 voice=True,
                 waveform=utils.encode_waveform(bytes((31, 31, 15, 15, 15, 15, 31, 31)) * 4)
@@ -1452,7 +1452,7 @@ def split_text(text, entities, *, limit=4096, max_entities=100, split_at=(r'\n',
             text, entities = markdown.parse(very_long_markdown_text)
 
             for text, entities in utils.split_text(text, entities):
-                await client.send_message(chat, text, formatting_entities=entities)
+                await client.sendmessage(chat, text, formatting_entities=entities)
     """
     # TODO add test cases (multiple entities beyond cutoff, at cutoff, splitting at emoji)
     # TODO try to optimize this a bit more? (avoid new_ent, smarter update method)

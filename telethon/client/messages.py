@@ -592,7 +592,7 @@ class MessageMethods:
         chat = next(c for c in r.chats if c.id == m.peer_id.channel_id)
         return utils.get_input_peer(chat), m.id
 
-    async def send_message(
+    async def sendmessage(
             self: 'TelegramClient',
             entity: 'hints.EntityLike',
             message: 'hints.MessageLike' = '',
@@ -728,25 +728,25 @@ class MessageMethods:
             .. code-block:: python
 
                 # Markdown is the default
-                await client.send_message('me', 'Hello **world**!')
+                await client.sendmessage('me', 'Hello **world**!')
 
                 # Default to another parse mode
                 client.parse_mode = 'html'
 
-                await client.send_message('me', 'Some <b>bold</b> and <i>italic</i> text')
-                await client.send_message('me', 'An <a href="https://example.com">URL</a>')
+                await client.sendmessage('me', 'Some <b>bold</b> and <i>italic</i> text')
+                await client.sendmessage('me', 'An <a href="https://example.com">URL</a>')
                 # code and pre tags also work, but those break the documentation :)
-                await client.send_message('me', '<a href="tg://user?id=me">Mentions</a>')
+                await client.sendmessage('me', '<a href="tg://user?id=me">Mentions</a>')
 
                 # Explicit parse mode
                 # No parse mode by default
                 client.parse_mode = None
 
                 # ...but here I want markdown
-                await client.send_message('me', 'Hello, **world**!', parse_mode='md')
+                await client.sendmessage('me', 'Hello, **world**!', parse_mode='md')
 
                 # ...and here I need HTML
-                await client.send_message('me', 'Hello, <i>world</i>!', parse_mode='html')
+                await client.sendmessage('me', 'Hello, <i>world</i>!', parse_mode='html')
 
                 # If you logged in as a bot account, you can send buttons
                 from telethon import events, Button
@@ -756,32 +756,32 @@ class MessageMethods:
                     await event.edit('Thank you for clicking {}!'.format(event.data))
 
                 # Single inline button
-                await client.send_message(chat, 'A single button, with "clk1" as data',
+                await client.sendmessage(chat, 'A single button, with "clk1" as data',
                                           buttons=Button.inline('Click me', b'clk1'))
 
                 # Matrix of inline buttons
-                await client.send_message(chat, 'Pick one from this grid', buttons=[
+                await client.sendmessage(chat, 'Pick one from this grid', buttons=[
                     [Button.inline('Left'), Button.inline('Right')],
                     [Button.url('Check this site!', 'https://example.com')]
                 ])
 
                 # Reply keyboard
-                await client.send_message(chat, 'Welcome', buttons=[
+                await client.sendmessage(chat, 'Welcome', buttons=[
                     Button.text('Thanks!', resize=True, single_use=True),
                     Button.request_phone('Send phone'),
                     Button.request_location('Send location')
                 ])
 
                 # Forcing replies or clearing buttons.
-                await client.send_message(chat, 'Reply to me', buttons=Button.force_reply())
-                await client.send_message(chat, 'Bye Keyboard!', buttons=Button.clear())
+                await client.sendmessage(chat, 'Reply to me', buttons=Button.force_reply())
+                await client.sendmessage(chat, 'Bye Keyboard!', buttons=Button.clear())
 
                 # Scheduling a message to be sent after 5 minutes
                 from datetime import timedelta
-                await client.send_message(chat, 'Hi, future!', schedule=timedelta(minutes=5))
+                await client.sendmessage(chat, 'Hi, future!', schedule=timedelta(minutes=5))
         """
         if file is not None:
-            return await self.send_file(
+            return await self.sendfile(
                 entity, file, caption=message, reply_to=reply_to,
                 attributes=attributes, parse_mode=parse_mode,
                 force_document=force_document, thumb=thumb,
@@ -806,7 +806,7 @@ class MessageMethods:
 
             if (message.media and not isinstance(
                     message.media, types.MessageMediaWebPage)):
-                return await self.send_file(
+                return await self.sendfile(
                     entity,
                     message.media,
                     caption=message.message,
@@ -938,7 +938,7 @@ class MessageMethods:
                 await client.forward_messages(chat, message_ids, from_chat)
 
                 # Forwarding as a copy
-                await client.send_message(chat, message)
+                await client.sendmessage(chat, message)
         """
         if as_album is not None:
             warnings.warn('the as_album argument is deprecated and no longer has any effect')
@@ -987,7 +987,7 @@ class MessageMethods:
 
         return sent[0] if single else sent
 
-    async def edit_message(
+    async def editmessage(
             self: 'TelegramClient',
             entity: 'typing.Union[hints.EntityLike, types.Message]',
             message: 'hints.MessageLike' = None,
@@ -1106,13 +1106,13 @@ class MessageMethods:
         Example
             .. code-block:: python
 
-                message = await client.send_message(chat, 'hello')
+                message = await client.sendmessage(chat, 'hello')
 
-                await client.edit_message(chat, message, 'hello!')
+                await client.editmessage(chat, message, 'hello!')
                 # or
-                await client.edit_message(chat, message.id, 'hello!!')
+                await client.editmessage(chat, message.id, 'hello!!')
                 # or
-                await client.edit_message(message, 'hello!!!')
+                await client.editmessage(message, 'hello!!!')
         """
         if isinstance(entity, types.InputBotInlineMessageID):
             text = text or message
@@ -1347,7 +1347,7 @@ class MessageMethods:
             .. code-block:: python
 
                 # Send and pin a message to annoy everyone
-                message = await client.send_message(chat, 'Pinotifying is fun!')
+                message = await client.sendmessage(chat, 'Pinotifying is fun!')
                 await client.pin_message(chat, message, notify=True)
         """
         return await self._pin(entity, message, unpin=False, notify=notify)

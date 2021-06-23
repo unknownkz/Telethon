@@ -154,9 +154,9 @@ class Draft:
     async def send(self, clear=True, parse_mode=()):
         """
         Sends the contents of this draft to the dialog. This is just a
-        wrapper around ``send_message(dialog.input_entity, *args, **kwargs)``.
+        wrapper around ``sendmessage(dialog.input_entity, *args, **kwargs)``.
         """
-        await self._client.send_message(
+        await self._client.sendmessage(
             self._peer, self.text, reply_to=self.reply_to_msg_id,
             link_preview=self.link_preview, parse_mode=parse_mode,
             clear_draft=clear

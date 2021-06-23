@@ -92,7 +92,7 @@ class UploadMethods:
 
     # region Public methods
 
-    async def send_file(
+    async def sendfile(
             self: 'TelegramClient',
             entity: 'hints.EntityLike',
             file: 'typing.Union[hints.FileLike, typing.Sequence[hints.FileLike]]',
@@ -277,22 +277,22 @@ class UploadMethods:
             .. code-block:: python
 
                 # Normal files like photos
-                await client.send_file(chat, '/my/photos/me.jpg', caption="It's me!")
+                await client.sendfile(chat, '/my/photos/me.jpg', caption="It's me!")
                 # or
-                await client.send_message(chat, "It's me!", file='/my/photos/me.jpg')
+                await client.sendmessage(chat, "It's me!", file='/my/photos/me.jpg')
 
                 # Voice notes or round videos
-                await client.send_file(chat, '/my/songs/song.mp3', voice_note=True)
-                await client.send_file(chat, '/my/videos/video.mp4', video_note=True)
+                await client.sendfile(chat, '/my/songs/song.mp3', voice_note=True)
+                await client.sendfile(chat, '/my/videos/video.mp4', video_note=True)
 
                 # Custom thumbnails
-                await client.send_file(chat, '/my/documents/doc.txt', thumb='photo.jpg')
+                await client.sendfile(chat, '/my/documents/doc.txt', thumb='photo.jpg')
 
                 # Only documents
-                await client.send_file(chat, '/my/photos/photo.png', force_document=True)
+                await client.sendfile(chat, '/my/photos/photo.png', force_document=True)
 
                 # Albums
-                await client.send_file(chat, [
+                await client.sendfile(chat, [
                     '/my/photos/holiday1.jpg',
                     '/my/photos/holiday2.jpg',
                     '/my/drawings/portrait.png'
@@ -303,15 +303,15 @@ class UploadMethods:
                     print('Uploaded', current, 'out of', total,
                           'bytes: {:.2%}'.format(current / total))
 
-                await client.send_file(chat, file, progress_callback=callback)
+                await client.sendfile(chat, file, progress_callback=callback)
 
                 # Dices, including dart and other future emoji
                 from telethon.tl import types
-                await client.send_file(chat, types.InputMediaDice(''))
-                await client.send_file(chat, types.InputMediaDice('🎯'))
+                await client.sendfile(chat, types.InputMediaDice(''))
+                await client.sendfile(chat, types.InputMediaDice('🎯'))
 
                 # Contacts
-                await client.send_file(chat, types.InputMediaContact(
+                await client.sendfile(chat, types.InputMediaContact(
                     phone_number='+34 123 456 789',
                     first_name='Example',
                     last_name='',
@@ -353,7 +353,7 @@ class UploadMethods:
                 captions = captions[10:]
 
             for doc, cap in zip(file, captions):
-                result.append(await self.send_file(
+                result.append(await self.sendfile(
                     entity, doc, allow_cache=allow_cache,
                     caption=cap, force_document=force_document,
                     progress_callback=progress_callback, reply_to=reply_to,
@@ -407,7 +407,7 @@ class UploadMethods:
         #
         # In theory documents can be sent inside the albums but they appear
         # as different messages (not inside the album), and the logic to set
-        # the attributes/avoid cache is already written in .send_file().
+        # the attributes/avoid cache is already written in .sendfile().
         entity = await self.get_input_entity(entity)
         if not utils.is_list_like(caption):
             caption = (caption,)
@@ -537,16 +537,16 @@ class UploadMethods:
 
                 # Photos as photo and document
                 file = await client.upload_file('photo.jpg')
-                await client.send_file(chat, file)                       # sends as photo
-                await client.send_file(chat, file, force_document=True)  # sends as document
+                await client.sendfile(chat, file)                       # sends as photo
+                await client.sendfile(chat, file, force_document=True)  # sends as document
 
                 file.name = 'not a photo.jpg'
-                await client.send_file(chat, file, force_document=True)  # document, new name
+                await client.sendfile(chat, file, force_document=True)  # document, new name
 
                 # As song or as voice note
                 file = await client.upload_file('song.ogg')
-                await client.send_file(chat, file)                   # sends as song
-                await client.send_file(chat, file, voice_note=True)  # sends as voice note
+                await client.sendfile(chat, file)                   # sends as song
+                await client.sendfile(chat, file, voice_note=True)  # sends as voice note
         """
         if isinstance(file, (types.InputFile, types.InputFileBig)):
             return file  # Already uploaded
