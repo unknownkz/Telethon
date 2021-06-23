@@ -1452,7 +1452,7 @@ def split_text(text, entities, *, limit=4096, max_entities=100, split_at=(r'\n',
             text, entities = markdown.parse(very_long_markdown_text)
 
             for text, entities in utils.split_text(text, entities):
-                await client.sendmessage(chat, text, formatting_entities=entities)
+                await client.send_message(chat, text, formatting_entities=entities)
     """
     # TODO add test cases (multiple entities beyond cutoff, at cutoff, splitting at emoji)
     # TODO try to optimize this a bit more? (avoid new_ent, smarter update method)
