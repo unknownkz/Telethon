@@ -97,6 +97,7 @@ class _ChatAction:
 
 class _ParticipantsIter(RequestIter):
     async def _init(self, entity, filter, search, aggressive):
+        # sourcery no-metrics
         if isinstance(filter, type):
             if filter in (types.ChannelParticipantsBanned,
                           types.ChannelParticipantsKicked,
@@ -786,14 +787,14 @@ class ChatMethods:
                 # Type for 2 seconds, then send a message
                 async with client.action(chat, 'typing'):
                     await asyncio.sleep(2)
-                    await client.sendmessage(chat, 'Hello world! I type slow ^^')
+                    await client.send_message(chat, 'Hello world! I type slow ^^')
 
                 # Cancel any previous action
                 await client.action(chat, 'cancel')
 
                 # Upload a document, showing its progress (most clients ignore this)
                 async with client.action(chat, 'document') as action:
-                    await client.sendfile(chat, zip_file, progress_callback=action.progress)
+                    await client.send_file(chat, zip_file, progress_callback=action.progress)
         """
         if isinstance(action, str):
             try:

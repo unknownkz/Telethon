@@ -46,7 +46,7 @@ class UserUpdate(EventBuilder):
             async def handler(event):
                 # If someone is uploading, say something
                 if event.uploading:
-                    await client.sendmessage(event.user_id, 'What are you sending?')
+                    await client.send_message(event.user_id, 'What are you sending?')
     """
     @classmethod
     def build(cls, update, others=None, self_id=None):

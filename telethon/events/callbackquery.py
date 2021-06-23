@@ -50,7 +50,7 @@ class CallbackQuery(EventBuilder):
 
             # Send a message with buttons users can click
             async def main():
-                await client.sendmessage(user, 'Yes or no?', buttons=[
+                await client.send_message(user, 'Yes or no?', buttons=[
                     Button.inline('Yes!', b'yes'),
                     Button.inline('Nope', b'no')
                 ])

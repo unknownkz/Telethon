@@ -781,7 +781,7 @@ class MessageMethods:
                 await client.send_message(chat, 'Hi, future!', schedule=timedelta(minutes=5))
         """
         if file is not None:
-            return await self.sendfile(
+            return await self.send_file(
                 entity, file, caption=message, reply_to=reply_to,
                 attributes=attributes, parse_mode=parse_mode,
                 force_document=force_document, thumb=thumb,
@@ -806,7 +806,7 @@ class MessageMethods:
 
             if (message.media and not isinstance(
                     message.media, types.MessageMediaWebPage)):
-                return await self.sendfile(
+                return await self.send_file(
                     entity,
                     message.media,
                     caption=message.message,
