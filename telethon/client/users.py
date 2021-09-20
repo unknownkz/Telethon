@@ -51,6 +51,9 @@ class UserMethods:
                 else:
                     raise errors.FloodWaitError(request=r, capture=diff)
 
+            if self._no_updates:
+                r = functions.InvokeWithoutUpdatesRequest(r)
+
         request_index = 0
         last_error = None
         self._last_request = time.time()

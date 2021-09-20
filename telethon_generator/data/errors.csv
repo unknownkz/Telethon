@@ -77,6 +77,7 @@ CHAT_SEND_INLINE_FORBIDDEN,400,You cannot send inline results in this chat
 CHAT_SEND_MEDIA_FORBIDDEN,403,You can't send media in this chat
 CHAT_SEND_STICKERS_FORBIDDEN,403,You can't send stickers in this chat
 CHAT_TITLE_EMPTY,400,No chat title provided
+CHAT_TOO_BIG,400,
 CHAT_WRITE_FORBIDDEN,403,You can't write in this chat
 CHP_CALL_FAIL,500,The statistics cannot be retrieved at this time
 CODE_EMPTY,400,The provided code is empty
@@ -101,6 +102,8 @@ DOCUMENT_INVALID,400,The document file was invalid and can't be used in inline m
 EMAIL_HASH_EXPIRED,400,The email hash expired and cannot be used to verify it
 EMAIL_INVALID,400,The given email is invalid
 EMAIL_UNCONFIRMED_X,400,"Email unconfirmed, the length of the code must be {code_length}"
+EMOJI_INVALID,400,
+EMOJI_NOT_MODIFIED,400,
 EMOTICON_EMPTY,400,The emoticon field cannot be empty
 EMOTICON_INVALID,400,The specified emoticon cannot be used or was not a emoticon
 EMOTICON_STICKERPACK_MISSING,400,The emoticon sticker pack you are trying to get is missing
@@ -133,6 +136,7 @@ FILE_PART_X_MISSING,400,Part {which} of the file is missing from storage
 FILE_REFERENCE_EMPTY,400,The file reference must exist to access the media and it cannot be empty
 FILE_REFERENCE_EXPIRED,400,The file reference has expired and is no longer valid or it belongs to self-destructing media and cannot be resent
 FILE_REFERENCE_INVALID,400,The file reference is invalid or you can't do that operation on such message
+FILE_TITLE_EMPTY,400,
 FIRSTNAME_INVALID,400,The first name is invalid
 FLOOD_TEST_PHONE_WAIT_X,420,A wait of {seconds} seconds is required in the test servers
 FLOOD_WAIT_X,420,A wait of {seconds} seconds is required
@@ -147,6 +151,7 @@ GIF_CONTENT_TYPE_INVALID,400,
 GIF_ID_INVALID,400,The provided GIF ID is invalid
 GRAPH_INVALID_RELOAD,400,
 GRAPH_OUTDATED_RELOAD,400,"Data can't be used for the channel statistics, graphs outdated"
+GROUPCALL_ADD_PARTICIPANTS_FAILED,500,
 GROUPCALL_ALREADY_DISCARDED,400,
 GROUPCALL_FORBIDDEN,403,
 GROUPCALL_JOIN_MISSING,400,
@@ -231,6 +236,7 @@ PASSWORD_EMPTY,400,The provided password is empty
 PASSWORD_HASH_INVALID,400,The password (and thus its hash value) you entered is invalid
 PASSWORD_MISSING,400,The account must have 2-factor authentication enabled (a password) before this method can be used
 PASSWORD_RECOVERY_EXPIRED,400,
+PASSWORD_RECOVERY_NA,400,
 PASSWORD_REQUIRED,400,The account must have 2-factor authentication enabled (a password) before this method can be used
 PASSWORD_TOO_FRESH_X,400,The password was added too recently and {seconds} seconds must pass before using the method
 PAYMENT_PROVIDER_INVALID,400,The payment provider was not recognised or its token was invalid
@@ -263,16 +269,19 @@ PHOTO_INVALID_DIMENSIONS,400,The photo dimensions are invalid (hint: `pip instal
 PHOTO_SAVE_FILE_INVALID,400,The photo you tried to send cannot be saved by Telegram. A reason may be that it exceeds 10MB. Try resizing it locally
 PHOTO_THUMB_URL_EMPTY,400,The URL used as a thumbnail appears to be empty or has caused another HTTP error
 PIN_RESTRICTED,400,You can't pin messages in private chats with other people
+PINNED_DIALOGS_TOO_MUCH,400,
 POLL_ANSWERS_INVALID,400,The poll did not have enough answers or had too many
 POLL_OPTION_DUPLICATE,400,A duplicate option was sent in the same poll
 POLL_OPTION_INVALID,400,A poll option used invalid data (the data may be too long)
 POLL_QUESTION_INVALID,400,The poll question was either empty or too long
 POLL_UNSUPPORTED,400,This layer does not support polls in the issued method
+POLL_VOTE_REQUIRED,403,
 PREVIOUS_CHAT_IMPORT_ACTIVE_WAIT_XMIN,406,"Similar to a flood wait, must wait {minutes} minutes"
 PRIVACY_KEY_INVALID,400,The privacy key is invalid
 PRIVACY_TOO_LONG,400,Cannot add that many entities in a single request
 PRIVACY_VALUE_INVALID,400,The privacy value is invalid
 PTS_CHANGE_EMPTY,500,No PTS change
+PUBLIC_KEY_REQUIRED,400,
 QUERY_ID_EMPTY,400,The query ID is empty
 QUERY_ID_INVALID,400,The query ID is invalid
 QUERY_TOO_SHORT,400,The query string is too short
@@ -351,9 +360,11 @@ TMP_PASSWORD_DISABLED,400,The temporary password is disabled
 TMP_PASSWORD_INVALID,400,Password auth needs to be regenerated
 TOKEN_INVALID,400,The provided token is invalid
 TTL_DAYS_INVALID,400,The provided TTL is invalid
+TTL_MEDIA_INVALID,400,The provided media cannot be used with a TTL
 TTL_PERIOD_INVALID,400,The provided TTL Period is invalid
 TYPES_EMPTY,400,The types field is empty
 TYPE_CONSTRUCTOR_INVALID,400,The type constructor is invalid
+UNKNOWN_ERROR,400,
 UNKNOWN_METHOD,500,The method you tried to call cannot be called on non-CDN DCs
 UNTIL_DATE_INVALID,400,That date cannot be specified in this request (try using None)
 URL_INVALID,400,The URL used was invalid (e.g. when answering a callback with a URL that's not t.me/yourbot or your game's URL)
