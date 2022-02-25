@@ -11,7 +11,7 @@ from ..tl import TLObject
 from ..tl.types import (
     MessageEntityBold, MessageEntityItalic, MessageEntityCode,
     MessageEntityPre, MessageEntityTextUrl, MessageEntityMentionName,
-    MessageEntityStrike
+    MessageEntityStrike,MessageEntitySpoiler
 )
 
 DEFAULT_DELIMITERS = {
@@ -19,7 +19,9 @@ DEFAULT_DELIMITERS = {
     '__': MessageEntityItalic,
     '~~': MessageEntityStrike,
     '`': MessageEntityCode,
-    '```': MessageEntityPre
+    '```': MessageEntityPre,
+    '||': MessageEntitySpoiler
+
 }
 
 DEFAULT_URL_RE = re.compile(r'\[([\S\s]+?)\]\((.+?)\)')
@@ -34,7 +36,6 @@ def parse(message, delimiters=None, url_re=None):
     """
     Parses the given markdown message and returns its stripped representation
     plus a list of the MessageEntity's that were found.
-
     :param message: the message with markdown-like syntax to be parsed.
     :param delimiters: the delimiters to be used, {delimiter: type}.
     :param url_re: the URL bytes regex to be used. Must have two groups.
@@ -142,7 +143,6 @@ def unparse(text, entities, delimiters=None, url_fmt=None):
     """
     Performs the reverse operation to .parse(), effectively returning
     markdown-like syntax given a normal text and its MessageEntity's.
-
     :param text: the text to be reconverted into markdown.
     :param entities: the MessageEntity's applied to the text.
     :return: a markdown-like text representing the combination of both inputs.

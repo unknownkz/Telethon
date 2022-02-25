@@ -609,6 +609,7 @@ class MessageMethods:
             entity: 'hints.EntityLike',
             message: 'hints.MessageLike' = '',
             *,
+            send_as: 'hints.EntityLike' = None,
             reply_to: 'typing.Union[int, types.Message]' = None,
             attributes: 'typing.Sequence[types.TypeDocumentAttribute]' = None,
             parse_mode: typing.Optional[str] = (),
@@ -620,64 +621,54 @@ class MessageMethods:
             clear_draft: bool = False,
             buttons: 'hints.MarkupLike' = None,
             silent: bool = None,
+            album: bool = False,
+            allow_cache: bool = False,
             background: bool = None,
+            noforwards: bool = None,
             supports_streaming: bool = False,
             schedule: 'hints.DateLike' = None,
             comment_to: 'typing.Union[int, types.Message]' = None
     ) -> 'types.Message':
         """
         Sends a message to the specified user, chat or channel.
-
         The default parse mode is the same as the official applications
         (a custom flavour of markdown). ``**bold**, `code` or __italic__``
         are available. In addition you can send ``[links](https://example.com)``
         and ``[mentions](@username)`` (or using IDs like in the Bot API:
         ``[mention](tg://user?id=123456789)``) and ``pre`` blocks with three
         backticks.
-
         Sending a ``/start`` command with a parameter (like ``?start=data``)
         is also done through this method. Simply send ``'/start data'`` to
         the bot.
-
         See also `Message.respond() <telethon.tl.custom.message.Message.respond>`
         and `Message.reply() <telethon.tl.custom.message.Message.reply>`.
-
         Arguments
             entity (`entity`):
                 To who will it be sent.
-
             message (`str` | `Message <telethon.tl.custom.message.Message>`):
                 The message to be sent, or another message object to resend.
-
                 The maximum length for a message is 35,000 bytes or 4,096
                 characters. Longer messages will not be sliced automatically,
                 and you should slice them manually if the text to send is
                 longer than said length.
-
             reply_to (`int` | `Message <telethon.tl.custom.message.Message>`, optional):
                 Whether to reply to a message or not. If an integer is provided,
                 it should be the ID of the message that it should reply to.
-
             attributes (`list`, optional):
                 Optional attributes that override the inferred ones, like
                 :tl:`DocumentAttributeFilename` and so on.
-
             parse_mode (`object`, optional):
                 See the `TelegramClient.parse_mode
                 <telethon.client.messageparse.MessageParseMethods.parse_mode>`
                 property for allowed values. Markdown parsing will be used by
                 default.
-
             formatting_entities (`list`, optional):
                 A list of message formatting entities. When provided, the ``parse_mode`` is ignored.
-
             link_preview (`bool`, optional):
                 Should the link preview be shown?
-
             file (`file`, optional):
                 Sends a message with a file attached (e.g. a photo,
                 video, audio or document). The ``message`` may be empty.
-
             thumb (`str` | `bytes` | `file`, optional):
                 Optional JPEG thumbnail (for documents). **Telegram will
                 ignore this parameter** unless you pass a ``.jpg`` file!
@@ -688,110 +679,84 @@ class MessageMethods:
                 dimensions of the underlying media through ``attributes=``
                 with :tl:`DocumentAttributesVideo` or by installing the
                 optional ``hachoir`` dependency.
-
             force_document (`bool`, optional):
                 Whether to send the given file as a document or not.
-
             clear_draft (`bool`, optional):
                 Whether the existing draft should be cleared or not.
-
             buttons (`list`, `custom.Button <telethon.tl.custom.button.Button>`, :tl:`KeyboardButton`):
                 The matrix (list of lists), row list or button to be shown
                 after sending the message. This parameter will only work if
                 you have signed in as a bot. You can also pass your own
                 :tl:`ReplyMarkup` here.
-
                 All the following limits apply together:
-
                 * There can be 100 buttons at most (any more are ignored).
                 * There can be 8 buttons per row at most (more are ignored).
                 * The maximum callback data per button is 64 bytes.
                 * The maximum data that can be embedded in total is just
                   over 4KB, shared between inline callback data and text.
-
             silent (`bool`, optional):
                 Whether the message should notify people in a broadcast
                 channel or not. Defaults to `False`, which means it will
                 notify them. Set it to `True` to alter this behaviour.
-
             background (`bool`, optional):
                 Whether the message should be send in background.
-
             supports_streaming (`bool`, optional):
                 Whether the sent video supports streaming or not. Note that
                 Telegram only recognizes as streamable some formats like MP4,
                 and others like AVI or MKV will not work. You should convert
                 these to MP4 before sending if you want them to be streamable.
                 Unsupported formats will result in ``VideoContentTypeError``.
-
             schedule (`hints.DateLike`, optional):
                 If set, the message won't send immediately, and instead
                 it will be scheduled to be automatically sent at a later
                 time.
-
             comment_to (`int` | `Message <telethon.tl.custom.message.Message>`, optional):
                 Similar to ``reply_to``, but replies in the linked group of a
                 broadcast channel instead (effectively leaving a "comment to"
                 the specified message).
-
                 This parameter takes precedence over ``reply_to``. If there is
                 no linked chat, `telethon.errors.sgIdInvalidError` is raised.
-
         Returns
             The sent `custom.Message <telethon.tl.custom.message.Message>`.
-
         Example
             .. code-block:: python
-
                 # Markdown is the default
                 await client.send_message('me', 'Hello **world**!')
-
                 # Default to another parse mode
                 client.parse_mode = 'html'
-
                 await client.send_message('me', 'Some <b>bold</b> and <i>italic</i> text')
                 await client.send_message('me', 'An <a href="https://example.com">URL</a>')
                 # code and pre tags also work, but those break the documentation :)
                 await client.send_message('me', '<a href="tg://user?id=me">Mentions</a>')
-
                 # Explicit parse mode
                 # No parse mode by default
                 client.parse_mode = None
-
                 # ...but here I want markdown
                 await client.send_message('me', 'Hello, **world**!', parse_mode='md')
-
                 # ...and here I need HTML
                 await client.send_message('me', 'Hello, <i>world</i>!', parse_mode='html')
-
                 # If you logged in as a bot account, you can send buttons
                 from telethon import events, Button
-
                 @client.on(events.CallbackQuery)
                 async def callback(event):
                     await event.edit('Thank you for clicking {}!'.format(event.data))
-
                 # Single inline button
                 await client.send_message(chat, 'A single button, with "clk1" as data',
                                           buttons=Button.inline('Click me', b'clk1'))
-
                 # Matrix of inline buttons
                 await client.send_message(chat, 'Pick one from this grid', buttons=[
                     [Button.inline('Left'), Button.inline('Right')],
                     [Button.url('Check this site!', 'https://example.com')]
                 ])
-
                 # Reply keyboard
                 await client.send_message(chat, 'Welcome', buttons=[
                     Button.text('Thanks!', resize=True, single_use=True),
                     Button.request_phone('Send phone'),
                     Button.request_location('Send location')
                 ])
-
                 # Forcing replies or clearing buttons.
                 await client.send_message(chat, 'Reply to me', buttons=Button.force_reply())
                 await client.send_message(chat, 'Bye Keyboard!', buttons=Button.clear())
-
                 # Scheduling a message to be sent after 5 minutes
                 from datetime import timedelta
                 await client.send_message(chat, 'Hi, future!', schedule=timedelta(minutes=5))
@@ -804,7 +769,8 @@ class MessageMethods:
                 buttons=buttons, clear_draft=clear_draft, silent=silent,
                 schedule=schedule, supports_streaming=supports_streaming,
                 formatting_entities=formatting_entities,
-                comment_to=comment_to, background=background
+                comment_to=comment_to, background=background, album=album,
+                allow_cache=allow_cache,noforwards=noforwards,send_as=send_as
             )
 
         entity = await self.get_input_entity(entity)
@@ -845,10 +811,15 @@ class MessageMethods:
                 clear_draft=clear_draft,
                 no_webpage=not isinstance(
                     message.media, types.MessageMediaWebPage),
-                schedule_date=schedule
+                schedule_date=schedule, 
+                noforwards=noforwards,
+                send_as=send_as
             )
             message = message.message
         else:
+            if message != None and not isinstance(message, str):
+                message = str(message)
+
             if formatting_entities is None:
                 message, formatting_entities = await self._parse_message_text(message, parse_mode)
             if not message:
@@ -866,7 +837,8 @@ class MessageMethods:
                 silent=silent,
                 background=background,
                 reply_markup=self.build_reply_markup(buttons),
-                schedule_date=schedule
+                schedule_date=schedule,
+                send_as=send_as, noforwards=noforwards
             )
 
         result = await self(request)
@@ -893,77 +865,65 @@ class MessageMethods:
             messages: 'typing.Union[hints.MessageIDLike, typing.Sequence[hints.MessageIDLike]]',
             from_peer: 'hints.EntityLike' = None,
             *,
+            send_as: 'hints.EntityLike' = None,
             background: bool = None,
+            drop_author: bool = None,
+            drop_caption: bool = None,
             with_my_score: bool = None,
             silent: bool = None,
             as_album: bool = None,
-            schedule: 'hints.DateLike' = None
+            schedule: 'hints.DateLike' = None,
+            noforwards: bool = None
     ) -> 'typing.Sequence[types.Message]':
         """
         Forwards the given messages to the specified entity.
-
         If you want to "forward" a message without the forward header
         (the "forwarded from" text), you should use `send_message` with
         the original message instead. This will send a copy of it.
-
         See also `Message.forward_to() <telethon.tl.custom.message.Message.forward_to>`.
-
         Arguments
             entity (`entity`):
                 To which entity the message(s) will be forwarded.
-
             messages (`list` | `int` | `Message <telethon.tl.custom.message.Message>`):
                 The message(s) to forward, or their integer IDs.
-
             from_peer (`entity`):
                 If the given messages are integer IDs and not instances
                 of the ``Message`` class, this *must* be specified in
                 order for the forward to work. This parameter indicates
                 the entity from which the messages should be forwarded.
-
             silent (`bool`, optional):
                 Whether the message should notify people with sound or not.
                 Defaults to `False` (send with a notification sound unless
                 the person has the chat muted). Set it to `True` to alter
                 this behaviour.
-
             background (`bool`, optional):
                 Whether the message should be forwarded in background.
-
             with_my_score (`bool`, optional):
                 Whether forwarded should contain your game score.
-
             as_album (`bool`, optional):
                 This flag no longer has any effect.
-
             schedule (`hints.DateLike`, optional):
                 If set, the message(s) won't forward immediately, and
                 instead they will be scheduled to be automatically sent
                 at a later time.
-
         Returns
             The list of forwarded `Message <telethon.tl.custom.message.Message>`,
             or a single one if a list wasn't provided as input.
-
             Note that if all messages are invalid (i.e. deleted) the call
             will fail with ``MessageIdInvalidError``. If only some are
             invalid, the list will have `None` instead of those messages.
-
         Example
             .. code-block:: python
-
                 # a single one
                 await client.forward_messages(chat, message)
                 # or
                 await client.forward_messages(chat, message_id, from_chat)
                 # or
                 await message.forward_to(chat)
-
                 # multiple
                 await client.forward_messages(chat, messages)
                 # or
                 await client.forward_messages(chat, message_ids, from_chat)
-
                 # Forwarding as a copy
                 await client.send_message(chat, message)
         """
@@ -1008,14 +968,19 @@ class MessageMethods:
                 to_peer=entity,
                 silent=silent,
                 background=background,
+                drop_author=drop_author,
+                drop_media_captions=drop_caption,
                 with_my_score=with_my_score,
-                schedule_date=schedule
+                schedule_date=schedule,
+                send_as=send_as,
+                noforwards=noforwards
             )
             result = await self(req)
             sent.extend(self._get_response_message(req, result, entity))
 
         return sent[0] if single else sent
 
+    
     async def editmessage(
             self: 'TelegramClient',
             entity: 'typing.Union[hints.EntityLike, types.Message]',
@@ -1442,6 +1407,48 @@ class MessageMethods:
 
         # Pinning a message that doesn't exist would RPC-error earlier
         return self._get_response_message(request, result, entity)
+    
+    
+    async def send_reaction(
+        self: 'TelegramClient',
+        entity: 'hints.EntityLike',
+        message: 'hints.MessageIDLike',
+        reaction: typing.Optional[str] = None,
+        big: bool = False
+    ):
+        message = utils.get_message_id(message) or 0
+        if not reaction:
+            get_default_request = functions.help.GetAppConfigRequest()
+            app_config = await self(get_default_request)
+            reaction = (
+                next(
+                    (
+                        y for y in app_config.value
+                        if "reactions_default" in y.key
+                    )
+                )
+            ).value.value
+        request = functions.messages.SendReactionRequest(
+            big=big,
+            peer=entity,
+            msg_id=message,
+            reaction=reaction
+        )
+        result = await self(request)
+        for update in result.updates:
+            if isinstance(update, types.UpdateMessageReactions):
+                return update.reactions
+            if isinstance(update, types.UpdateEditMessage):
+                return update.message.reactions
+
+    async def set_quick_reaction(
+        self: 'TelegramClient',
+        reaction: str
+    ):
+        request = functions.messages.SetDefaultReactionRequest(
+            reaction=reaction
+        )
+        return await self(request)
 
     # endregion
 
