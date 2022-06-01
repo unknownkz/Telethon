@@ -1,5 +1,8 @@
+import typing
+
+from .messagebutton import MessageButton
 from .. import types
-from ... import utils
+from ... import utils, hints
 
 
 class Button:
@@ -54,7 +57,8 @@ class Button:
             types.KeyboardButtonGame,
             types.KeyboardButtonSwitchInline,
             types.KeyboardButtonUrl,
-            types.InputKeyboardButtonUrlAuth
+            types.InputKeyboardButtonUrlAuth,
+            types.InputKeyboardButtonUserProfile
         ))
 
     @staticmethod
@@ -134,7 +138,7 @@ class Button:
         If no `url` is specified, it will default to `text`.
 
         Args:
-            bot (`hints.EntityLike`):
+            bot (`hints.DialogLike`):
                 The bot that requires this authorization. By default, this
                 is the bot that is currently logged in (itself), although
                 you may pass a different input peer.
@@ -164,6 +168,72 @@ class Button:
             request_write_access=write_access,
             fwd_text=fwd_text
         )
+
+    @staticmethod
+    def inline_mention(text, input_entity=None):
+        """
+        Creates a new inline button linked to the profile of user.
+
+        This will only work in Telegram versions released after December 7, 2021.
+        
+        Older clients will display unsupported message.
+
+        Args:
+            text:
+                Label text on the button
+
+            input_entity:
+                Input entity of :tl:User to use for profile button.
+                By default, this is the logged in user (itself), although
+                you may pass a different input peer.
+
+                .. note::
+
+                    For now, you cannot use ID or username for this argument.
+                    If you want to use different user, you must manually use
+                    `client.get_input_entity() <telethon.client.users.UserMethods.get_input_entity>`.
+
+        """
+        return types.InputKeyboardButtonUserProfile(
+            text,
+            utils.get_input_user(input_entity or types.InputUserSelf())
+        )
+        
+
+    @staticmethod
+    def mention(text, input_entity=None):
+        """
+        Creates a text mentioning the user.
+
+        This will only work in Telegram versions (only Telegram Desktop and Telegram X) released after December 7, 2021.
+        
+        Older clients will display unsupported message.
+
+        Args:
+            text:
+                Label text on the button
+
+            input_entity:
+                Input entity of :tl:User to use for profile button.
+                By default, this is the logged in user (itself), although
+                you may pass a different input peer.
+
+                .. note::
+
+                    For now, you cannot use ID or username for this argument.
+                    If you want to use different user, you must manually use
+                    `client.get_input_entity() <telethon.client.users.UserMethods.get_input_entity>`.
+
+        """
+        return types.KeyboardButtonUserProfile(
+            text,
+            (
+                utils.get_input_user(
+                    input_entity or types.InputUserSelf()
+                ).id
+            )
+        )
+
 
     @classmethod
     def text(cls, text, *, resize=None, single_use=None, selective=None):
@@ -306,3 +376,84 @@ class Button:
         documentation for more information on using games.
         """
         return types.KeyboardButtonGame(text)
+
+
+def build_reply_markup(
+        buttons: 'typing.Optional[hints.MarkupLike]',
+        inline_only: bool = False) -> 'typing.Optional[types.TypeReplyMarkup]':
+    """
+    Builds a :tl:`ReplyInlineMarkup` or :tl:`ReplyKeyboardMarkup` for
+    the given buttons.
+
+    Does nothing if either no buttons are provided or the provided
+    argument is already a reply markup.
+
+    You should consider using this method if you are going to reuse
+    the markup very often. Otherwise, it is not necessary.
+
+    This method is **not** asynchronous (don't use ``await`` on it).
+
+    Arguments
+        buttons (`hints.MarkupLike`):
+            The button, list of buttons, array of buttons or markup
+            to convert into a markup.
+
+        inline_only (`bool`, optional):
+            Whether the buttons **must** be inline buttons only or not.
+    """
+    if not buttons:
+        return None
+
+    try:
+        if buttons.SUBCLASS_OF_ID == 0xe2e10ef2:
+            return buttons  # crc32(b'ReplyMarkup'):
+    except AttributeError:
+        pass
+
+    if not utils.is_list_like(buttons):
+        buttons = [buttons]
+    if not utils.is_list_like(buttons[0]):
+        buttons = [[b] for b in buttons]
+
+    is_inline = False
+    is_normal = False
+    resize = None
+    single_use = None
+    selective = None
+
+    rows = []
+    for row in buttons:
+        current = []
+        for button in row:
+            if isinstance(button, Button):
+                if button.resize is not None:
+                    resize = button.resize
+                if button.single_use is not None:
+                    single_use = button.single_use
+                if button.selective is not None:
+                    selective = button.selective
+
+                button = button.button
+            elif isinstance(button, MessageButton):
+                button = button.button
+
+            inline = Button._is_inline(button)
+            is_inline |= inline
+            is_normal |= not inline
+
+            if button.SUBCLASS_OF_ID == 0xbad74a3:
+                # 0xbad74a3 == crc32(b'KeyboardButton')
+                current.append(button)
+
+        if current:
+            rows.append(types.KeyboardButtonRow(current))
+
+    if inline_only and is_normal:
+        raise ValueError('You cannot use non-inline buttons here')
+    elif is_inline == is_normal and is_normal:
+        raise ValueError('You cannot mix inline with normal buttons')
+    elif is_inline:
+        return types.ReplyInlineMarkup(rows)
+    # elif is_normal:
+    return types.ReplyKeyboardMarkup(
+        rows, resize=resize, single_use=single_use, selective=selective)
