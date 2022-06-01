@@ -198,7 +198,7 @@ class Button:
         
 
     @staticmethod
-    def mention(text, input_entity=None):
+    def mention(text, input_entity):
         """
         Creates a text mentioning the user.
 
@@ -222,14 +222,7 @@ class Button:
                     `client.get_input_entity() <telethon.client.users.UserMethods.get_input_entity>`.
 
         """
-        return types.KeyboardButtonUserProfile(
-            text,
-            (
-                utils.get_input_user(
-                    input_entity or types.InputUserSelf()
-                ).id
-            )
-        )
+        return types.KeyboardButtonUserProfile(text,input_entity)
 
 
     @classmethod
