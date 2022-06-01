@@ -23,7 +23,3 @@ jobs:
     - name: Lint with flake8
       run: |
         tox -e flake
-    - name: Test with pytest
-      run: |
-        # use "py", which is the default python version
-        tox -e py
