@@ -72,7 +72,7 @@ class InlineBuilder:
         
     # noinspection PyIncorrectDocstring
     async def article(
-            self, title,file,description=None,
+            self, title,file=None,description=None,
             *, url=None, thumb=None, content=None,type=None,
             id=None, text=None, parse_mode=(), link_preview=False,
             mime_type=None, attributes=None, force_document=False,
