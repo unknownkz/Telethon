@@ -173,7 +173,6 @@ class InlineBuilder:
                 media = fh,
                 parse_mode=parse_mode,
                 link_preview=link_preview,
-                force_document=force_document,
                 geo=geo,
                 period=period,
                 contact=contact,
