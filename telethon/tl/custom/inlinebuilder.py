@@ -127,7 +127,7 @@ class InlineBuilder:
         """
         fh=None
         if file:
-            if type='photo':
+            if type=='photo':
                 try:
                     fh = utils.get_input_photo(file)
                 except TypeError:
@@ -142,7 +142,7 @@ class InlineBuilder:
                         ))
                         fh = utils.get_input_photo(r.photo)
 
-            elif type='document':
+            elif type=='document':
                 try:
                     fh = utils.get_input_document(file)
                 except TypeError:
