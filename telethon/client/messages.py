@@ -1242,7 +1242,8 @@ class MessageMethods:
             message: 'typing.Union[hints.MessageIDLike, typing.Sequence[hints.MessageIDLike]]' = None,
             *,
             max_id: int = None,
-            clear_mentions: bool = False) -> bool:
+            clear_mentions: bool = False,
+            clear_reactions: bool = False) -> bool:
         """
         Marks messages as read and optionally clears mentions.
 
@@ -1272,13 +1273,15 @@ class MessageMethods:
             clear_mentions (`bool`):
                 Whether the mention badge should be cleared (so that
                 there are no more mentions) or not for the given entity.
-
                 If no message is provided, this will be the only action
                 taken.
-
+            clear_reactions (`bool`):
+                Whether the reactions badge should be cleared (so that
+                there are no more reaction notifications) or not for the given entity.
+                If no message is provided, this will be the only action
+                taken.
         Example
             .. code-block:: python
-
                 # using a Message object
                 await client.send_read_acknowledge(chat, message)
                 # ...or using the int ID of a Message
@@ -1294,10 +1297,13 @@ class MessageMethods:
                     max_id = max(msg.id for msg in message)
                 else:
                     max_id = message.id
-
         entity = await self.get_input_entity(entity)
         if clear_mentions:
             await self(functions.messages.ReadMentionsRequest(entity))
+            if max_id is None and not clear_reactions:
+                return True
+        if clear_reactions:
+            await self(functions.messages.ReadReactionsRequest(entity))
             if max_id is None:
                 return True
 
