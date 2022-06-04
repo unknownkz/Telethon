@@ -69,12 +69,14 @@ class InlineBuilder:
     """
     def __init__(self, client):
         self._client = client
-
+        
     # noinspection PyIncorrectDocstring
     async def article(
-            self, title, description=None,
-            *, url=None, thumb=None, content=None,
-            id=None, text=None, parse_mode=(), link_preview=True,
+            self, title,file,description=None,
+            *, url=None, thumb=None, content=None,type=None,
+            id=None, text=None, parse_mode=(), link_preview=False,
+            mime_type=None, attributes=None, force_document=False,
+            voice_note=False, video_note=False, use_cache=True,
             geo=None, period=60, contact=None, game=False, buttons=None
     ):
         """
@@ -123,6 +125,43 @@ class InlineBuilder:
                     ),
                 ]
         """
+        fh=None
+        if file:
+            if type='photo':
+                try:
+                    fh = utils.get_input_photo(file)
+                except TypeError:
+                    _, media, _ = await self._client._file_to_media(
+                        file, allow_cache=True, as_image=True
+                    )
+                    if isinstance(media, types.InputPhoto):
+                        fh = media
+                    else:
+                        r = await self._client(functions.messages.UploadMediaRequest(
+                            types.InputPeerSelf(), media=media
+                        ))
+                        fh = utils.get_input_photo(r.photo)
+
+            elif type='document':
+                try:
+                    fh = utils.get_input_document(file)
+                except TypeError:
+                    _, media, _ = await self._client._file_to_media(
+                        file,
+                        mime_type=mime_type,
+                        attributes=attributes,
+                        force_document=force_document,
+                        voice_note=voice_note,
+                        video_note=video_note,
+                        allow_cache=use_cache
+                    )
+                    if isinstance(media, types.InputDocument):
+                        fh = media
+                    else:
+                        r = await self._client(functions.messages.UploadMediaRequest(
+                            types.InputPeerSelf(), media=media
+                        ))
+                        fh = utils.get_input_document(r.document)
         # TODO Does 'article' work always?
         # article, photo, gif, mpeg4_gif, video, audio,
         # voice, document, location, venue, contact, game
@@ -130,8 +169,13 @@ class InlineBuilder:
             id=id or '',
             type='article',
             send_message=await self._message(
-                text=text, parse_mode=parse_mode, link_preview=link_preview,
-                geo=geo, period=period,
+                text=text,
+                media = fh,
+                parse_mode=parse_mode,
+                link_preview=link_preview,
+                force_document=force_document,
+                geo=geo,
+                period=period,
                 contact=contact,
                 game=game,
                 buttons=buttons
