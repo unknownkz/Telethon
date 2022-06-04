@@ -73,7 +73,7 @@ class InlineBuilder:
     # noinspection PyIncorrectDocstring
     async def article(
             self, title,file=None,description=None,
-            *, url=None, thumb=None, content=None,type=None,
+            *, url=None, thumb=None, content=None,
             id=None, text=None, parse_mode=(), link_preview=False,
             mime_type=None, attributes=None, force_document=False,
             voice_note=False, video_note=False, use_cache=True,
@@ -127,7 +127,7 @@ class InlineBuilder:
         """
         fh=None
         if file:
-            if type=='photo':
+            if file.endswith((".jpg", ".jpeg", ".png")):
                 try:
                     fh = utils.get_input_photo(file)
                 except TypeError:
@@ -142,7 +142,7 @@ class InlineBuilder:
                         ))
                         fh = utils.get_input_photo(r.photo)
 
-            elif type=='document':
+            else:
                 try:
                     fh = utils.get_input_document(file)
                 except TypeError:
