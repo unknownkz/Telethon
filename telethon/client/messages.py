@@ -1128,7 +1128,7 @@ class MessageMethods:
                             types.InputPeerSelf(), media
                         )
                     )
-                    return await self.edit_message(
+                    return await self.editmessage(
                         entity,
                         None,
                         text=text,
