@@ -54,7 +54,8 @@ class Button:
             types.KeyboardButtonGame,
             types.KeyboardButtonSwitchInline,
             types.KeyboardButtonUrl,
-            types.InputKeyboardButtonUrlAuth
+            types.InputKeyboardButtonUrlAuth,
+            types.InputKeyboardButtonUserProfile
         ))
 
     @staticmethod
@@ -134,7 +135,7 @@ class Button:
         If no `url` is specified, it will default to `text`.
 
         Args:
-            bot (`hints.EntityLike`):
+            bot (`hints.DialogLike`):
                 The bot that requires this authorization. By default, this
                 is the bot that is currently logged in (itself), although
                 you may pass a different input peer.
@@ -164,6 +165,65 @@ class Button:
             request_write_access=write_access,
             fwd_text=fwd_text
         )
+
+    @staticmethod
+    def inline_mention(text, input_entity=None):
+        """
+        Creates a new inline button linked to the profile of user.
+
+        This will only work in Telegram versions released after December 7, 2021.
+        
+        Older clients will display unsupported message.
+
+        Args:
+            text:
+                Label text on the button
+
+            input_entity:
+                Input entity of :tl:User to use for profile button.
+                By default, this is the logged in user (itself), although
+                you may pass a different input peer.
+
+                .. note::
+
+                    For now, you cannot use ID or username for this argument.
+                    If you want to use different user, you must manually use
+                    `client.get_input_entity() <telethon.client.users.UserMethods.get_input_entity>`.
+
+        """
+        return types.InputKeyboardButtonUserProfile(
+            text,
+            utils.get_input_user(input_entity or types.InputUserSelf())
+        )
+        
+
+    @staticmethod
+    def mention(text, input_entity):
+        """
+        Creates a text mentioning the user.
+
+        This will only work in Telegram versions (only Telegram Desktop and Telegram X) released after December 7, 2021.
+        
+        Older clients will display unsupported message.
+
+        Args:
+            text:
+                Label text on the button
+
+            input_entity:
+                Input entity of :tl:User to use for profile button.
+                By default, this is the logged in user (itself), although
+                you may pass a different input peer.
+
+                .. note::
+
+                    For now, you cannot use ID or username for this argument.
+                    If you want to use different user, you must manually use
+                    `client.get_input_entity() <telethon.client.users.UserMethods.get_input_entity>`.
+
+        """
+        return types.KeyboardButtonUserProfile(text,input_entity)
+
 
     @classmethod
     def text(cls, text, *, resize=None, single_use=None, selective=None):

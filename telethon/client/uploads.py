@@ -578,8 +578,8 @@ class UploadMethods:
             if not part_size_kb:
                 part_size_kb = utils.get_appropriated_part_size(file_size)
 
-            if part_size_kb > 512:
-                raise ValueError('The part size must be less or equal to 512KB')
+            if part_size_kb > 1024:
+                raise ValueError('The part size must be less or equal to 1024KB')
 
             part_size = int(part_size_kb * 1024)
             if part_size % 1024 != 0:

@@ -6,6 +6,7 @@ import warnings
 from .. import helpers, utils, errors, hints
 from ..requestiter import RequestIter
 from ..tl import types, functions
+from telethon.errors.rpcerrorlist import FilePart0MissingError
 
 _MAX_CHUNK_SIZE = 100
 
@@ -1000,51 +1001,40 @@ class MessageMethods:
     ) -> 'types.Message':
         """
         Edits the given message to change its text or media.
-
         See also `Message.edit() <telethon.tl.custom.message.Message.edit>`.
-
         Arguments
             entity (`entity` | `Message <telethon.tl.custom.message.Message>`):
                 From which chat to edit the message. This can also be
                 the message to be edited, and the entity will be inferred
                 from it, so the next parameter will be assumed to be the
                 message text.
-
                 You may also pass a :tl:`InputBotInlineMessageID`,
                 which is the only way to edit messages that were sent
                 after the user selects an inline query result.
-
             message (`int` | `Message <telethon.tl.custom.message.Message>` | `str`):
                 The ID of the message (or `Message
                 <telethon.tl.custom.message.Message>` itself) to be edited.
                 If the `entity` was a `Message
                 <telethon.tl.custom.message.Message>`, then this message
                 will be treated as the new text.
-
             text (`str`, optional):
                 The new text of the message. Does nothing if the `entity`
                 was a `Message <telethon.tl.custom.message.Message>`.
-
             parse_mode (`object`, optional):
                 See the `TelegramClient.parse_mode
                 <telethon.client.messageparse.MessageParseMethods.parse_mode>`
                 property for allowed values. Markdown parsing will be used by
                 default.
-
             attributes (`list`, optional):
                 Optional attributes that override the inferred ones, like
                 :tl:`DocumentAttributeFilename` and so on.
-
             formatting_entities (`list`, optional):
                 A list of message formatting entities. When provided, the ``parse_mode`` is ignored.
-
             link_preview (`bool`, optional):
                 Should the link preview be shown?
-
             file (`str` | `bytes` | `file` | `media`, optional):
                 The file object that should replace the existing media
                 in the message.
-
             thumb (`str` | `bytes` | `file`, optional):
                 Optional JPEG thumbnail (for documents). **Telegram will
                 ignore this parameter** unless you pass a ``.jpg`` file!
@@ -1055,53 +1045,41 @@ class MessageMethods:
                 dimensions of the underlying media through ``attributes=``
                 with :tl:`DocumentAttributesVideo` or by installing the
                 optional ``hachoir`` dependency.
-
             force_document (`bool`, optional):
                 Whether to send the given file as a document or not.
-
             buttons (`list`, `custom.Button <telethon.tl.custom.button.Button>`, :tl:`KeyboardButton`):
                 The matrix (list of lists), row list or button to be shown
                 after sending the message. This parameter will only work if
                 you have signed in as a bot. You can also pass your own
                 :tl:`ReplyMarkup` here.
-
             supports_streaming (`bool`, optional):
                 Whether the sent video supports streaming or not. Note that
                 Telegram only recognizes as streamable some formats like MP4,
                 and others like AVI or MKV will not work. You should convert
                 these to MP4 before sending if you want them to be streamable.
                 Unsupported formats will result in ``VideoContentTypeError``.
-
             schedule (`hints.DateLike`, optional):
                 If set, the message won't be edited immediately, and instead
                 it will be scheduled to be automatically edited at a later
                 time.
-
                 Note that this parameter will have no effect if you are
                 trying to edit a message that was sent via inline bots.
-
         Returns
             The edited `Message <telethon.tl.custom.message.Message>`,
             unless `entity` was a :tl:`InputBotInlineMessageID` in which
             case this method returns a boolean.
-
         Raises
             ``MessageAuthorRequiredError`` if you're not the author of the
             message but tried editing it anyway.
-
             ``MessageNotModifiedError`` if the contents of the message were
             not modified at all.
-
             ``MessageIdInvalidError`` if the ID of the message is invalid
             (the ID itself may be correct, but the message with that ID
             cannot be edited). For example, when trying to edit messages
             with a reply markup (or clear markup) this error will be raised.
-
         Example
             .. code-block:: python
-
                 message = await client.send_message(chat, 'hello')
-
                 await client.edit_message(chat, message, 'hello!')
                 # or
                 await client.edit_message(chat, message.id, 'hello!!')
@@ -1136,15 +1114,36 @@ class MessageMethods:
             # Invoke `messages.editInlineBotMessage` from the right datacenter.
             # Otherwise, Telegram will error with `MESSAGE_ID_INVALID` and do nothing.
             exported = self.session.dc_id != entity.dc_id
-            if exported:
-                try:
-                    sender = await self._borrow_exported_sender(entity.dc_id)
-                    return await self._call(sender, request)
-                finally:
-                    await self._return_exported_sender(sender)
-            else:
+            if not exported:
                 return await self(request)
 
+            sender = None
+            try:
+                sender = await self._borrow_exported_sender(entity.dc_id)
+                try:
+                    return await self._call(sender, request)
+                except FilePart0MissingError:
+                    media = await self(
+                        functions.messages.UploadMediaRequest(
+                            types.InputPeerSelf(), media
+                        )
+                    )
+                    return await self.editmessage(
+                        entity,
+                        None,
+                        text=text,
+                        file=media,
+                        buttons=buttons,
+                        supports_streaming=supports_streaming,
+                        attributes=attributes,
+                        formatting_entities=formatting_entities,
+                        force_document=force_document,
+                        schedule=schedule,
+                        link_preview=link_preview,
+                    )
+            finally:
+                if sender:
+                    await self._return_exported_sender(sender)
         entity = await self.get_input_entity(entity)
         request = functions.messages.EditMessageRequest(
             peer=entity,
@@ -1156,8 +1155,8 @@ class MessageMethods:
             reply_markup=self.build_reply_markup(buttons),
             schedule_date=schedule
         )
-        msg = self._get_response_message(request, await self(request), entity)
-        return msg
+        return self._get_response_message(request, await self(request), entity)
+
 
     async def delete_messages(
             self: 'TelegramClient',
@@ -1242,7 +1241,8 @@ class MessageMethods:
             message: 'typing.Union[hints.MessageIDLike, typing.Sequence[hints.MessageIDLike]]' = None,
             *,
             max_id: int = None,
-            clear_mentions: bool = False) -> bool:
+            clear_mentions: bool = False,
+            clear_reactions: bool = False) -> bool:
         """
         Marks messages as read and optionally clears mentions.
 
@@ -1272,13 +1272,15 @@ class MessageMethods:
             clear_mentions (`bool`):
                 Whether the mention badge should be cleared (so that
                 there are no more mentions) or not for the given entity.
-
                 If no message is provided, this will be the only action
                 taken.
-
+            clear_reactions (`bool`):
+                Whether the reactions badge should be cleared (so that
+                there are no more reaction notifications) or not for the given entity.
+                If no message is provided, this will be the only action
+                taken.
         Example
             .. code-block:: python
-
                 # using a Message object
                 await client.send_read_acknowledge(chat, message)
                 # ...or using the int ID of a Message
@@ -1294,10 +1296,13 @@ class MessageMethods:
                     max_id = max(msg.id for msg in message)
                 else:
                     max_id = message.id
-
         entity = await self.get_input_entity(entity)
         if clear_mentions:
             await self(functions.messages.ReadMentionsRequest(entity))
+            if max_id is None and not clear_reactions:
+                return True
+        if clear_reactions:
+            await self(functions.messages.ReadReactionsRequest(entity))
             if max_id is None:
                 return True
 
