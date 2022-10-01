@@ -678,6 +678,30 @@ class Message(ChatGetter, SenderGetter, TLObject):
 
     # endregion Public Properties
 
+    @property
+    def link_message(self):
+    if (
+        hasattr(self.chat, 'username')
+        and self.chat.username
+    ):
+        return (
+            f'https://t.me/{self.chat.username}/{self.id}'
+        )
+        if self.chat and self.chat.id:
+            chat = self.chat.id
+        elif self.chat_id:
+            if str(self.chat_id).startswith('-' or '-100'):
+                chat = int(
+                    str(self.chat_id)
+                    .replace('-100', '')
+                    .replace('-', '')
+                )
+            else:
+                chat = self.chat_id
+        else:
+            return
+        return f'https://t.me/c/{chat}/{self.id}'
+
     # region Public Methods
 
     def get_entities_text(self, cls=None):
@@ -1072,8 +1096,8 @@ class Message(ChatGetter, SenderGetter, TLObject):
         if self._client:
             return await self._client.unpin_message(
                 await self.get_input_chat(), self.id)
-        
-        
+
+
     async def react(self, reaction=None, big=False):
         """
         Reacts on the given message. Shorthand for
@@ -1087,7 +1111,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
                 reaction,
                 big
             )
-        
+
     # endregion Public Methods
 
     # region Private Methods
