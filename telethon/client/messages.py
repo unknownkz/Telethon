@@ -605,7 +605,7 @@ class MessageMethods:
         chat = next(c for c in r.chats if c.id == m.peer_id.channel_id)
         return utils.get_input_peer(chat), m.id
 
-    async def sendmessage(
+    async def send_message(
             self: 'TelegramClient',
             entity: 'hints.EntityLike',
             message: 'hints.MessageLike' = '',
@@ -982,7 +982,7 @@ class MessageMethods:
         return sent[0] if single else sent
 
     
-    async def editmessage(
+    async def edit_message(
             self: 'TelegramClient',
             entity: 'typing.Union[hints.EntityLike, types.Message]',
             message: 'hints.MessageLike' = None,
