@@ -92,7 +92,7 @@ class UploadMethods:
 
     # region Public methods
 
-    async def sendfile(
+    async def send_file(
             self: 'TelegramClient',
             entity: 'hints.EntityLike',
             file: 'typing.Union[hints.FileLike, typing.Sequence[hints.FileLike]]',
