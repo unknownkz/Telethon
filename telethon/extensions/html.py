@@ -13,7 +13,8 @@ from ..tl.types import (
     MessageEntityPre, MessageEntityEmail, MessageEntityUrl,
     MessageEntityTextUrl, MessageEntityMentionName,
     MessageEntityUnderline, MessageEntityStrike, MessageEntityBlockquote,
-    MessageEntitySpoiler, TypeMessageEntity
+    MessageEntitySpoiler, MessageEntityHashtag, MessageEntityUrl,
+    TypeMessageEntity
 )
 
 
@@ -53,8 +54,12 @@ class HTMLToTelegramParser(HTMLParser):
             EntityType = MessageEntityUnderline
         elif tag in ['del', 's', 'strike']:
             EntityType = MessageEntityStrike
+        elif tag in ['hashtag', 'htag']:
+            EntityType = MessageEntityHashtag
         elif tag == 'spoiler':
             EntityType = MessageEntitySpoiler
+        elif tag == 'url':
+            EntityType = MessageEntityUrl
         elif tag == 'blockquote':
             EntityType = MessageEntityBlockquote
         elif tag == 'code':
@@ -203,6 +208,12 @@ def unparse(text: str, entities: Iterable[TypeMessageEntity], _offset: int = 0,
             html.append('<strike>{}</strike>'.format(entity_text))
         elif entity_type == MessageEntitySpoiler:
             html.append('<spoiler>{}</spoiler>'.format(entity_text))
+        elif entity_type == MessageEntityHashtag:
+            html.append('<htag>{}</htag>'.format(entity_text))
+        elif entity_type == MessageEntityHashtag:
+            html.append('<hashtag>{}</hashtag>'.format(entity_text))
+        elif entity_type == MessageEntityUrl:
+            html.append('<url>{}</url>'.format(entity_text))
         elif entity_type == MessageEntityBlockquote:
             html.append('<blockquote>{}</blockquote>'.format(entity_text))
         elif entity_type == MessageEntityPre:
