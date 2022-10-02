@@ -204,6 +204,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
             restriction_reason: Optional[types.TypeRestrictionReason] = None,
             forwards: Optional[int] = None,
             replies: Optional[types.TypeMessageReplies] = None,
+            link_message: Optional[str] = None,
 
             # For MessageAction (mandatory)
             action: Optional[types.TypeMessageAction] = None
@@ -240,6 +241,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
         self.restriction_reason = restriction_reason
         self.ttl_period = ttl_period
         self.action = action
+        self.link_message = link_message
 
         # Convenient storage for custom functions
         # TODO This is becoming a bit of bloat
@@ -698,9 +700,9 @@ class Message(ChatGetter, SenderGetter, TLObject):
                     )
                 else:
                     chat = self.chat_id
-        else:
-            return
-        return f'https://t.me/c/{chat}/{self.id}'
+            else:
+                return
+            return f'https://t.me/c/{chat}/{self.id}'
 
     # region Public Methods
 

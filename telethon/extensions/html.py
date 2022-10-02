@@ -45,14 +45,16 @@ class HTMLToTelegramParser(HTMLParser):
         attrs = dict(attrs)
         EntityType = None
         args = {}
-        if tag == 'strong' or tag == 'b':
+        if tag in ['strong', 'b']:
             EntityType = MessageEntityBold
-        elif tag == 'em' or tag == 'i':
+        elif tag in ['em', 'i']:
             EntityType = MessageEntityItalic
         elif tag == 'u':
             EntityType = MessageEntityUnderline
-        elif tag == 'del' or tag == 's':
+        elif tag in ['del', 's', 'strike']:
             EntityType = MessageEntityStrike
+        elif tag == 'spoiler':
+            EntityType = MessageEntitySpoiler
         elif tag == 'blockquote':
             EntityType = MessageEntityBlockquote
         elif tag == 'code':
@@ -195,6 +197,12 @@ def unparse(text: str, entities: Iterable[TypeMessageEntity], _offset: int = 0,
             html.append('<u>{}</u>'.format(entity_text))
         elif entity_type == MessageEntityStrike:
             html.append('<del>{}</del>'.format(entity_text))
+        elif entity_type == MessageEntityStrike:
+            html.append('<s>{}</s>'.format(entity_text))
+        elif entity_type == MessageEntityStrike:
+            html.append('<strike>{}</strike>'.format(entity_text))
+        elif entity_type == MessageEntitySpoiler:
+            html.append('<spoiler>{}</spoiler>'.format(entity_text))
         elif entity_type == MessageEntityBlockquote:
             html.append('<blockquote>{}</blockquote>'.format(entity_text))
         elif entity_type == MessageEntityPre:
