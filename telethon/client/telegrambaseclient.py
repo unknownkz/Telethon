@@ -18,9 +18,9 @@ from ..tl import functions, types
 from ..tl.alltlobjects import LAYER
 
 DEFAULT_DC_ID = 2
-DEFAULT_IPV4_IP = '149.154.167.51'
+DEFAULT_IPV4_IP = '149.154.167.50'
 DEFAULT_IPV6_IP = '2001:67c:4e8:f002::a'
-DEFAULT_PORT = 443
+DEFAULT_PORT = 80
 
 if typing.TYPE_CHECKING:
     from .telegramclient import TelegramClient
