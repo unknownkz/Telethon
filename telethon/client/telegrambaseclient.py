@@ -574,7 +574,7 @@ class TelegramBaseClient(abc.ABC):
                 await client.disconnect()
         """
         if self.loop.is_running():
-            return self._disconnect_coro()
+            return asyncio.shield(self.loop.create_task(self._disconnect_coro()))
         else:
             try:
                 self.loop.run_until_complete(self._disconnect_coro())

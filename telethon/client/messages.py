@@ -620,7 +620,7 @@ class MessageMethods:
             thumb: 'hints.FileLike' = None,
             force_document: bool = False,
             clear_draft: bool = False,
-            buttons: 'hints.MarkupLike' = None,
+            buttons: typing.Optional['hints.MarkupLike'] = None,
             silent: bool = None,
             album: bool = False,
             allow_cache: bool = False,
@@ -995,7 +995,7 @@ class MessageMethods:
             file: 'hints.FileLike' = None,
             thumb: 'hints.FileLike' = None,
             force_document: bool = False,
-            buttons: 'hints.MarkupLike' = None,
+            buttons: typing.Optional['hints.MarkupLike'] = None,
             supports_streaming: bool = False,
             schedule: 'hints.DateLike' = None
     ) -> 'types.Message':
@@ -1412,8 +1412,8 @@ class MessageMethods:
 
         # Pinning a message that doesn't exist would RPC-error earlier
         return self._get_response_message(request, result, entity)
-    
-    
+
+
     async def send_reaction(
         self: 'TelegramClient',
         entity: 'hints.EntityLike',
