@@ -812,7 +812,7 @@ class MessageMethods:
                 clear_draft=clear_draft,
                 no_webpage=not isinstance(
                     message.media, types.MessageMediaWebPage),
-                schedule_date=schedule, 
+                schedule_date=schedule,
                 noforwards=noforwards,
                 send_as=send_as
             )
@@ -981,7 +981,7 @@ class MessageMethods:
 
         return sent[0] if single else sent
 
-    
+
     async def edit_message(
             self: 'TelegramClient',
             entity: 'typing.Union[hints.EntityLike, types.Message]',

@@ -46,11 +46,14 @@ class SenderGetter(abc.ABC):
         # cached information, they may use the property instead.
         if (self._sender is None or getattr(self._sender, 'min', None)) \
                 and await self.get_input_sender():
-            try:
-                self._sender =\
-                    await self._client.get_entity(self._input_sender)
-            except ValueError:
-                await self._refetch_sender()
+
+            if self._sender is None or getattr(self._sender, 'min', None):
+                try:
+                    self._sender =\
+                        await self._client.get_entity(self._input_sender)
+                except ValueError:
+                    await self._refetch_sender()
+
         return self._sender
 
     @property
