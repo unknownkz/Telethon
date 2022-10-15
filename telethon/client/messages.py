@@ -205,7 +205,7 @@ class _MessagesIter(RequestIter):
             message._finish_init(self.client, entities, self.entity)
             self.buffer.append(message)
 
-        if len(r.messages) < self.request.limit:
+        if not r.messages or r.messages[0].id <= self.request.limit:
             return True
 
         # Get the last message that's not empty (in some rare cases
