@@ -15,6 +15,7 @@ import os
 import pathlib
 import re
 import struct
+import typing
 from collections import namedtuple
 from mimetypes import guess_extension
 from types import GeneratorType
@@ -70,10 +71,56 @@ VALID_USERNAME_RE = re.compile(
     r'|gif|vid|pic|bing|wiki|imdb|bold|vote|like|coub)$',
     re.IGNORECASE
 )
+MESSAGES_ID_REGEX = r'^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/)(?:c\/|)(.*)\/(.*)|(?:tg//openmessage\?)?(?:user_id=(.*))?(?:\&message_id=(.*))'
+
 
 _FileInfo = namedtuple('FileInfo', 'dc_id location size')
 
 _log = logging.getLogger(__name__)
+
+
+def link_message(self) -> typing.Optional[str]:
+    if (
+        hasattr(self.chat, 'username')
+        and self.chat.username
+    ):
+        return (
+            f'https://t.me/{self.chat.username}/{self.id}'
+        )
+        if self.chat and self.chat.id:
+            chat = self.chat.id
+        elif self.chat_id:
+            if str(self.chat_id).startswith('-' or '-100'):
+                chat = int(
+                    str(self.chat_id)
+                    .replace('-100', '')
+                    .replace('-', '')
+                )
+            else:
+                chat = self.chat_id
+        else:
+            return None
+        if self.is_private:
+            return f'tg://openmessage?user_id={chat}&message_id={self.id}'
+
+        return f'https://t.me/c/{chat}/{self.id}'
+
+
+def get_message_id(
+    link: str,
+) -> typing.Tuple[typing.Union[str, None], typing.Union[int, None]]:
+    # TODO: support for username.t.me
+    idx = [
+        tuple(filter(None, _))
+        for _ in re.findall(MESSAGES_ID_REGEX, link, flags=re.IGNORECASE)
+    ]
+    ids = next((_ for _ in idx), None)
+    if not ids:
+        return None, None
+    chat, link_msg = ids
+    if chat.isdecimal():
+        chat = int('-100' + chat)
+    return chat, int(link_msg)
 
 
 def chunks(iterable, size=100):
