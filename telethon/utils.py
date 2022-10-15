@@ -79,7 +79,7 @@ _FileInfo = namedtuple('FileInfo', 'dc_id location size')
 _log = logging.getLogger(__name__)
 
 
-def link_message(self) -> typing.Optional[str]:
+def link_message(self):
     if (
         hasattr(self.chat, 'username')
         and self.chat.username
@@ -106,7 +106,7 @@ def link_message(self) -> typing.Optional[str]:
         return f'https://t.me/c/{chat}/{self.id}'
 
 
-def get_message_id(
+def get_msg_id(
     link: str,
 ) -> typing.Tuple[typing.Union[str, None], typing.Union[int, None]]:
     # TODO: support for username.t.me
