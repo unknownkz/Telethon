@@ -567,6 +567,13 @@ class Message(ChatGetter, SenderGetter, TLObject):
         return self._document_by_attribute(types.DocumentAttributeSticker)
 
     @property
+    def custom_emoji(self):
+        """
+        The :tl:`Document` media in this message, if it's a custom emoji.
+        """
+        return self._document_by_attribute(types.DocumentAttributeCustomEmoji)
+
+    @property
     def contact(self):
         """
         The :tl:`MessageMediaContact` in this message, if it's a contact.
