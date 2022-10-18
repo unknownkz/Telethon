@@ -205,6 +205,9 @@ class _MessagesIter(RequestIter):
             message._finish_init(self.client, entities, self.entity)
             self.buffer.append(message)
 
+        if isinstance(r, types.messages.Messages):
+            return True
+
         if not r.messages or r.messages[0].id <= self.request.limit:
             return True
 
