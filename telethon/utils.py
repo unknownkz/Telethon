@@ -79,7 +79,7 @@ _FileInfo = namedtuple('FileInfo', 'dc_id location size')
 _log = logging.getLogger(__name__)
 
 
-def link_message(self):
+def link_message(self) -> str:
     if (
         hasattr(self.chat, 'username')
         and self.chat.username
@@ -87,27 +87,29 @@ def link_message(self):
         return (
             f'https://t.me/{self.chat.username}/{self.id}'
         )
-    if self.chat and self.chat.id:
-        chat = self.chat.id
-    elif self.chat_id:
-        if str(self.chat_id).startswith('-' or '-100'):
-            chat = int(
-                str(self.chat_id)
-                .replace('-100', '')
-                .replace('-', '')
-            )
-        else:
-            chat = self.chat_id
-    else:
-        return None
 
-    if self.is_private:
-        if not self.is_group:
-            return f'tg://openmessage?user_id={chat}&message_id={self.id}'
+    else:
+        if self.chat and self.chat.id:
+            chat = self.chat.id
+        elif self.chat_id:
+            if str(self.chat_id).startswith('-' or '-100'):
+                chat = int(
+                    str(self.chat_id)
+                    .replace('-100', '')
+                    .replace('-', '')
+                )
+            else:
+                chat = self.chat_id
+        else:
+            return
+
+        if self.is_private:
+            if not self.is_group:
+                return f'tg://openmessage?user_id={chat}&message_id={self.id}'
+
+            return f'https://t.me/c/{chat}/{self.id}'
 
         return f'https://t.me/c/{chat}/{self.id}'
-
-    return f'https://t.me/c/{chat}/{self.id}'
 
 
 def get_msg_id(
@@ -116,7 +118,7 @@ def get_msg_id(
     # TODO: support for username.t.me
     idx = [
         tuple(filter(None, _))
-        for _ in re.findall(MESSAGES_ID_REGEX, link, flags=re.IGNORECASE)
+        for _ in re.findall(MESSAGES_ID_REGEX, str(link), flags=re.IGNORECASE)
     ]
     ids = next((_ for _ in idx), None)
     if not ids:
