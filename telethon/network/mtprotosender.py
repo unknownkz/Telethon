@@ -16,11 +16,12 @@ from ..errors import (
 from ..extensions import BinaryReader
 from ..tl.core import RpcResult, MessageContainer, GzipPacked
 from ..tl.functions.auth import LogOutRequest
-from ..tl.functions import PingRequest, DestroySessionRequest
+from ..tl.functions import PingRequest, DestroySessionRequest, DestroyAuthKeyRequest
 from ..tl.types import (
     MsgsAck, Pong, BadServerSalt, BadMsgNotification, FutureSalts,
     MsgNewDetailedInfo, NewSessionCreated, MsgDetailedInfo, MsgsStateReq,
     MsgsStateInfo, MsgsAllInfo, MsgResendReq, upload, DestroySessionOk, DestroySessionNone,
+    DestroyAuthKeyOk, DestroyAuthKeyNone, DestroyAuthKeyFail
 )
 from ..crypto import AuthKey
 from ..helpers import retry_range
@@ -108,8 +109,11 @@ class MTProtoSender:
             MsgsStateReq.CONSTRUCTOR_ID: self._handle_state_forgotten,
             MsgResendReq.CONSTRUCTOR_ID: self._handle_state_forgotten,
             MsgsAllInfo.CONSTRUCTOR_ID: self._handle_msg_all,
-            DestroySessionOk: self._handle_destroy_session,
-            DestroySessionNone: self._handle_destroy_session,
+            DestroySessionOk.CONSTRUCTOR_ID: self._handle_destroy_session,
+            DestroySessionNone.CONSTRUCTOR_ID: self._handle_destroy_session,
+            DestroyAuthKeyOk.CONSTRUCTOR_ID: self._handle_destroy_auth_key,
+            DestroyAuthKeyNone.CONSTRUCTOR_ID: self._handle_destroy_auth_key,
+            DestroyAuthKeyFail.CONSTRUCTOR_ID: self._handle_destroy_auth_key,
         }
 
     # Public API
@@ -648,7 +652,11 @@ class MTProtoSender:
         try:
             assert message.obj.SUBCLASS_OF_ID == 0x8af52aac  # crc32(b'Updates')
         except AssertionError:
-            self._log.warning('Note: %s is not an update, not dispatching it %s', message.obj)
+            self._log.warning(
+                'Note: %s is not an update, not dispatching it %s',
+                message.obj.__class__.__name__,
+                message.obj
+            )
             return
 
         self._log.debug('Handling update %s', message.obj.__class__.__name__)
@@ -826,3 +834,25 @@ class MTProtoSender:
         del self._pending_state[msg_id]
         if not state.future.cancelled():
             state.future.set_result(message.obj)
+
+    async def _handle_destroy_auth_key(self, message):
+        """
+        Handles :tl:`DestroyAuthKeyFail`, :tl:`DestroyAuthKeyNone`, and :tl:`DestroyAuthKeyOk`.
+        :tl:`DestroyAuthKey` is not intended for users to use, but they still
+        might, and the response won't come in `rpc_result`, so thhat's worked
+        around here.
+        """
+        self._log.debug('Handling destroy auth key %s', message.obj)
+        for msg_id, state in list(self._pending_state.items()):
+            if isinstance(state.request, DestroyAuthKeyRequest):
+                del self._pending_state[msg_id]
+                if not state.future.cancelled():
+                    state.future.set_result(message.obj)
+
+        # If the auth key has been destroyed, that pretty much means the
+        # library can't continue as our auth key will no longer be found
+        # on the server.
+        # Even if the library didn't disconnect, the server would (and then
+        # the library would reconnect and learn about auth key being invalid).
+        if isinstance(message.obj, DestroyAuthKeyOk):
+            await self._disconnect(error=AuthKeyNotFound())
