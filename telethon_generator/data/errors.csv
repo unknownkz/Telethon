@@ -22,6 +22,7 @@ AUTH_RESTART,500,Restart the authorization process
 AUTH_TOKEN_ALREADY_ACCEPTED,400,The authorization token was already used
 AUTH_TOKEN_EXPIRED,400,The provided authorization token has expired and the updated QR-code must be re-scanned
 AUTH_TOKEN_INVALID,400,An invalid authorization token was provided
+AUTH_TOKEN_INVALID2,400,An invalid authorization token was provided
 AUTOARCHIVE_NOT_AVAILABLE,400,You cannot use this feature yet
 BANK_CARD_NUMBER_INVALID,400,Incorrect credit card number
 BASE_PORT_LOC_INVALID,400,Base port location invalid
@@ -117,6 +118,7 @@ ENCRYPTION_DECLINED,400,The secret chat was declined
 ENCRYPTION_ID_INVALID,400,The provided secret chat ID is invalid
 ENCRYPTION_OCCUPY_FAILED,500,TDLib developer claimed it is not an error while accepting secret chats and 500 is used instead of 420
 ENTITIES_TOO_LONG,400,It is no longer possible to send such long data inside entity tags (for example inline text URLs)
+ENTITY_BOUNDS_INVALID,400,Some of provided entities have invalid bounds (length is zero or out of the boundaries of the string)
 ENTITY_MENTION_USER_INVALID,400,You can't use this entity
 ERROR_TEXT_EMPTY,400,The provided error message is empty
 EXPIRE_DATE_INVALID,400,
@@ -164,6 +166,7 @@ GROUPCALL_NOT_MODIFIED,400,
 GROUPED_MEDIA_INVALID,400,Invalid grouped media
 GROUP_CALL_INVALID,400,Group call invalid
 HASH_INVALID,400,The provided hash is invalid
+HIDE_REQUESTER_MISSING,400,
 HISTORY_GET_FAILED,500,Fetching of history failed
 IMAGE_PROCESS_FAILED,400,Failure while processing image
 IMPORT_FILE_INVALID,400,The file is too large to be imported
@@ -185,6 +188,7 @@ INVITE_FORBIDDEN_WITH_JOINAS,400,
 INVITE_HASH_EMPTY,400,The invite hash is empty
 INVITE_HASH_EXPIRED,400,The chat the user tried to join has expired and is not valid anymore
 INVITE_HASH_INVALID,400,The invite hash is invalid
+INVITE_REQUEST_SENT,400,You have successfully requested to join this chat or channel
 LANG_CODE_INVALID,400,
 LANG_PACK_INVALID,400,The provided language pack is invalid
 LASTNAME_INVALID,400,The last name is invalid
@@ -214,7 +218,7 @@ MESSAGE_IDS_EMPTY,400,No message ids were provided
 MESSAGE_ID_INVALID,400,"The specified message ID is invalid or you can't do that operation on such message"
 MESSAGE_NOT_MODIFIED,400,Content of the message was not modified
 MESSAGE_POLL_CLOSED,400,The poll was closed and can no longer be voted on
-MESSAGE_TOO_LONG,400,Message was too long. Current maximum length is 4096 UTF-8 characters
+MESSAGE_TOO_LONG,400,Message was too long
 METHOD_INVALID,400,The API method is invalid and cannot be used
 MSGID_DECREASE_RETRY,500,The request should be retried with a lower message ID
 MSG_ID_INVALID,400,The message ID used in the peer was invalid
@@ -344,6 +348,7 @@ SLOWMODE_WAIT_X,420,A wait of {seconds} seconds is required before sending anoth
 SRP_ID_INVALID,400,
 START_PARAM_EMPTY,400,The start parameter is empty
 START_PARAM_INVALID,400,Start parameter invalid
+START_PARAM_TOO_LONG,400,
 STATS_MIGRATE_X,303,The channel statistics must be fetched from DC {dc}
 STICKERSET_INVALID,400,The provided sticker set is invalid
 STICKERSET_OWNER_ANONYMOUS,406,This sticker set can't be used as the group's official stickers because it was created by one of its anonymous admins
