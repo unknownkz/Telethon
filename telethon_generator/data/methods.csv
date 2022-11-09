@@ -149,7 +149,7 @@ folders.deleteFolder,user,FOLDER_ID_EMPTY
 folders.editPeerFolders,user,FOLDER_ID_INVALID
 getFutureSalts,both,
 help.acceptTermsOfService,user,
-help.editUserInfo,user,USER_INVALID ENTITY_BOUNDS_INVALID
+help.editUserInfo,user,USER_INVALID
 help.getAppChangelog,user,
 help.getAppConfig,user,
 help.getAppUpdate,user,
