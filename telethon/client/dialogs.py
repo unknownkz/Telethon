@@ -88,7 +88,7 @@ class _DialogsIter(RequestIter):
                         cd.entity, 'migrated_to', None) is None:
                     self.buffer.append(cd)
 
-        if len(r.dialogs) < self.request.limit\
+        if not self.buffer or len(r.dialogs) < self.request.limit\
                 or not isinstance(r, types.messages.DialogsSlice):
             # Less than we requested means we reached the end, or
             # we didn't get a DialogsSlice which means we got all.
